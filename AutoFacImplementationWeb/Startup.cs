@@ -29,22 +29,18 @@ namespace AutoFacImplementationWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers().AddControllersAsServices();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AutoFacImplementationWeb", Version = "v1" });
             });
-
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.RegisterType<PersonBusiness>().As<IPersonBusiness>();
-            //builder.RegisterType<StringBusiness>().As<IStringBusiness>(); //did not implement this interface
+            builder.RegisterType<StringBusiness>().As<IStringBusiness>();
             var controllersTypesInAssembly = typeof(Startup).Assembly.GetExportedTypes()
                 .Where(type => typeof(ControllerBase).IsAssignableFrom(type)).ToArray();
             builder.RegisterTypes(controllersTypesInAssembly).PropertiesAutowired();
-
-            //makes our DI Autofac and not IServiceProvider
             return new AutofacServiceProvider(builder.Build());
         }
 
